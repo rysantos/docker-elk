@@ -102,7 +102,7 @@ exclusively. Make sure the repository is cloned in one of those locations or fol
 Clone this repository, then start the stack using Docker Compose:
 
 ```console
-$ docker-compose up -d
+$ docker-compose up
 ```
 
 You can also run all services in the background (detached mode) by adding the `-d` flag to the above command.
