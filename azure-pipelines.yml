@@ -17,3 +17,28 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Ryan Santos Internal(83811caa-96c8-433d-8980-291fd1b1524e)'
+    azureContainerRegistry: '{"loginServer":"elktest.azurecr.io", "id" : "/subscriptions/83811caa-96c8-433d-8980-291fd1b1524e/resourceGroups/Development/providers/Microsoft.ContainerRegistry/registries/elktest"}'
+    dockerComposeFile: '**/docker-compose.yml'
+    dockerComposeFileArgs: |
+      ELK_VERSION=7.5.0
+      COMPOSE_PROJECT_NAME=es 
+      CERTS_DIR=/usr/share/elasticsearch/config/certificate
+      ELASTIC_PASSWORD=changeme
+    action: 'Build services'
+
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Ryan Santos Internal(83811caa-96c8-433d-8980-291fd1b1524e)'
+    azureContainerRegistry: '{"loginServer":"elktest.azurecr.io", "id" : "/subscriptions/83811caa-96c8-433d-8980-291fd1b1524e/resourceGroups/Development/providers/Microsoft.ContainerRegistry/registries/elktest"}'
+    dockerComposeFile: '**/docker-compose.yml'
+    dockerComposeFileArgs: |
+      ELK_VERSION=7.5.0
+      COMPOSE_PROJECT_NAME=es 
+      CERTS_DIR=/usr/share/elasticsearch/config/certificate
+      ELASTIC_PASSWORD=changeme
+    action: 'Push services'
