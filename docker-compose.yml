@@ -19,7 +19,10 @@ services:
 
   es01:
     container_name: es01
-    image: docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
     environment:
       - node.name=es01
       - discovery.seed_hosts=es01,es02
@@ -37,7 +40,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/es01/es01.crt
       - xpack.security.transport.ssl.key=$CERTS_DIR/es01/es01.key
-    volumes: ['data01:/usr/share/elasticsearch/data', 'certs:$CERTS_DIR']
+    volumes: ['data01:/usr/share/elasticsearch', 'certs:$CERTS_DIR']
     ports:
       - 9200:9200
       - 9300:9300
@@ -53,7 +56,10 @@ services:
 
   es02:
     container_name: es02
-    image: docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
     environment:
       - node.name=es02
       - discovery.seed_hosts=es01,es02
@@ -71,7 +77,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/es02/es02.crt
       - xpack.security.transport.ssl.key=$CERTS_DIR/es02/es02.key
-    volumes: ['data02:/usr/share/elasticsearch/data', 'certs:$CERTS_DIR']
+    volumes: ['data02:/usr/share/elasticsearch', 'certs:$CERTS_DIR']
     depends_on: 
       - create_certs
     networks:
@@ -90,6 +96,7 @@ services:
       - "5601:5601"
     depends_on: 
       - create_certs
+      - es01
     networks:
       - elk
 
@@ -102,6 +109,8 @@ services:
     volumes:
       - ./beats/heartbeat/config/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro
     restart: always
+    depends_on: 
+      - es01
     networks:
       - elk
 
@@ -114,6 +123,8 @@ services:
     volumes:
       - ./beats/metricbeat/config/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
     restart: always
+    depends_on: 
+      - es01
     networks:
       - elk
 
@@ -126,7 +137,39 @@ services:
     volumes:
       - ./beats/metricbeat/config/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
     restart: always
+    depends_on: 
+      - es01
     networks:
+      - elk
+  
+  filebeat:
+    container_name: filebeat
+    build:
+      context: ./beats/filebeat
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes: 
+      - ./beats/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - 'data01:/usr/share/elasticsearch'
+    restart: always
+    depends_on: 
+      - es01
+    networks: 
+      - elk
+  
+  filebeat_2:
+    container_name: filebeat_2
+    build:
+      context: ./beats/filebeat
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes: 
+      - ./beats/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - 'data02:/usr/share/elasticsearch'
+    restart: always
+    depends_on: 
+      - es01
+    networks: 
       - elk
   
   apm_server:
@@ -134,7 +177,7 @@ services:
     build:
       context: APM/
       args:
-        ELK_VERSION: 7.5.0
+        ELK_VERSION: $ELK_VERSION
     volumes:
       - ./APM/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
     depends_on: 
@@ -142,6 +185,8 @@ services:
     ports:
       - "8200:8200"
     restart: always
+    depends_on: 
+      - es01
     networks:
       - elk
 

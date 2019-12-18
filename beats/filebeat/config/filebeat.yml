@@ -25,7 +25,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/*.log
+    - /usr/share/elasticsearch/logs/*.log
     #- c:\programdata\elasticsearch\logs\*
   tags: ["log"]
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
@@ -115,10 +115,12 @@ setup.dashboards.enabled: true
 # Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
 # This requires a Kibana endpoint configuration.
 setup.kibana:
+  enabled: true
   host: "kibana:5601"
-  protocol: "http"
+  protocol: "https"
   username: "elastic"
   password: "changeme"
+  ssl.verification_mode: none
 
   # Kibana Host
   # Scheme and port can be left out and will be set to the default (http and 5601)
@@ -150,14 +152,17 @@ setup.kibana:
 
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:
-  # Array of hosts to connect to.
   enabled: true
-  hosts: ["elasticsearch:9200"]
-
-  # Optional protocol and basic auth credentials.
-  protocol: "http"
+  #hosts: ["{{elastic_url}}"]
+  hosts: ["es01:9200"]
+  protocol: "https"
+  loadbalancer: true
+  #ssl.certificate_authorities: ["/usr/share/elasticsearch/ca/ca.crt"]
+  #ssl.certificate: "/usr/share/elasticsearch/instance/instance.crt"
+  #ssl.key: "/usr/share/elasticsearch/instance/instance.key"
   username: "elastic"
   password: "changeme"
+  ssl.verification_mode: none
 
 #----------------------------- Logstash output --------------------------------
 output.logstash:
