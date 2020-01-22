@@ -12,8 +12,8 @@ heartbeat.monitors:
   name: "ElasticSearch"
   schedule: '@every 10s'
   urls:
-    - http://es01:9200
-    - http://es02:9200
+    - https://es01:9200
+    - https://es02:9200
   username: "beats_system"
   password: "changeme"
   ssl.verification_mode: none
@@ -26,7 +26,7 @@ processors:
 output.elasticsearch:
   enabled: true
   hosts: ["es01:9200"]
-  protocol: "http"
+  protocol: "https"
   loadbalancer: true
   username: "elastic"
   password: "changeme"
@@ -35,7 +35,7 @@ output.elasticsearch:
 setup.kibana:
   enabled: true
   host: "kibana:5601"
-  protocol: "http"
+  protocol: "https"
   username: "elastic"
   password: "changeme"
   ssl.verification_mode: none

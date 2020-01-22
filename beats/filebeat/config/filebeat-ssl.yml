@@ -155,7 +155,7 @@ output.elasticsearch:
   enabled: true
   #hosts: ["{{elastic_url}}"]
   hosts: ["es01:9200"]
-  protocol: "http"
+  protocol: "https"
   loadbalancer: true
   #ssl.certificate_authorities: ["/usr/share/elasticsearch/ca/ca.crt"]
   #ssl.certificate: "/usr/share/elasticsearch/instance/instance.crt"

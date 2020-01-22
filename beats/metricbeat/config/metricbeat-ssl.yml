@@ -1,0 +1,101 @@
+---
+########################## Metricbeat Configuration ###########################
+
+#============================== Autodiscover ===================================
+
+# Autodiscover allows you to detect changes in the system and spawn new modules
+# as they happen.
+
+
+#==========================  Modules configuration ============================
+metricbeat.modules:
+
+
+#------------------------------- System Module -------------------------------
+- module: system
+  metricsets:
+    - cpu             # CPU usage
+    - filesystem      # File system usage for each mountpoint
+    - fsstat          # File system summary metrics
+    - load            # CPU load averages
+    - memory          # Memory usage
+    - network         # Network IO
+    - process         # Per process metrics
+    - process_summary # Process summary
+    - uptime          # System Uptime
+    - core            # Per CPU core usage
+    - diskio          # Disk IO
+    #- raid           # Raid
+    - socket          # Sockets and connection info (linux only)
+  enabled: true
+  period: 10s
+  processes: ['.*']
+
+  process.cgroups.enabled: true
+
+
+#------------------------------- Docker Module -------------------------------
+
+
+#================================ Processors ===================================
+
+processors:
+#- add_docker_metadata: ~
+#- add_host_metadata: ~
+- add_host_metadata:
+    geo:
+      name: Azure Dev
+      region_name: New York
+
+
+#============================== Dashboards =====================================
+# These settings control loading the sample dashboards to the Kibana index. Loading
+# the dashboards is disabled by default and can be enabled either by setting the
+# options here or by using the `setup` command.
+setup.dashboards.enabled: true
+
+# The URL from where to download the dashboards archive. By default this URL
+# has a value which is computed based on the Beat name and version. For released
+# versions, this URL points to the dashboard archive on the artifacts.elastic.co
+# website.
+#setup.dashboards.url:
+
+#================================ Outputs ======================================
+
+#-------------------------- Elasticsearch output -------------------------------
+output.elasticsearch:
+  #enabled: true
+  #hosts: ["{{elastic_url}}"]
+  hosts: ["es01:9200"]
+  protocol: "http"
+  loadbalancer: true
+  #ssl.certificate_authorities: ["/usr/share/elasticsearch/ca/ca.crt"]
+  #ssl.certificate: "/usr/share/elasticsearch/instance/instance.crt"
+  #ssl.key: "/usr/share/elasticsearch/instance/instance.key"
+  username: "elastic"
+  password: "changeme"
+  ssl.verification_mode: none
+
+#----------------------------- Logstash output ---------------------------------
+output.logstash:
+  enabled: false
+  hosts: ["elasticsearch:5044"]
+
+setup.kibana:
+  enabled: true
+  host: "kibana:5601"
+  protocol: "http"
+  username: "elastic"
+  password: "changeme"
+  ssl.verification_mode: none
+
+#============================== Xpack Monitoring =====================================
+logging.level: debug
+logging.to_files: true
+logging.files:
+  path: /var/log/metricbeat
+  name: metricbeat
+  keepfiles: 7
+  permissions: 0777
+xpack.monitoring.enabled: true
+setup.dashboards.enabled: true
