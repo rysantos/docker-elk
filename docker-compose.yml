@@ -6,6 +6,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION
     command: >
       bash -c '
+        yum update -y
         yum install -y -q -e 0 unzip;
         if [[ ! -f /certs/bundle.zip ]]; then
           bin/elasticsearch-certutil cert --silent --pem --in config/certificates/instances.yml -out /certs/bundle.zip;
@@ -41,7 +42,7 @@ services:
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/es01/es01.crt
       - xpack.security.transport.ssl.key=$CERTS_DIR/es01/es01.key
       - xpack.monitoring.collection.enabled=true
-    volumes: ['data01:/usr/share/elasticsearch', 'certs:$CERTS_DIR']
+    volumes: ['data01:/usr/share/elasticsearch', 'certs:$CERTS_DIR', './packages:/usr/share/elasticsearch/packages']
     ports:
       - 9200:9200
       - 9300:9300
