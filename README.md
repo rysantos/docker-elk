@@ -85,7 +85,7 @@ $ chcon -R system_u:object_r:admin_home_t:s0 docker-elk/
 
 ### Docker for Desktop
 
-#### Windows
+###### Windows
 
 Ensure the [Shared Drives][win-shareddrives] feature is enabled for the `C:` drive.
 

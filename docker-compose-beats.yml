@@ -1,0 +1,70 @@
+version: '3.2'
+
+services:
+  heartbeat:
+    container_name: heartbeat
+    build:
+      context: ./beats/heartbeat
+      args:
+          ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./beats/heartbeat/config/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro
+    restart: always
+    networks:
+      - elk
+
+  metricbeat:
+    container_name: metricbeat
+    build:
+      context: ./beats/metricbeat
+      args:
+          ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./beats/metricbeat/config/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+    restart: always
+    networks:
+      - elk
+
+  metricbeat_2:
+    container_name: metricbeat_2
+    build:
+      context: ./beats/metricbeat
+      args:
+          ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./beats/metricbeat/config/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+    restart: always
+    networks:
+      - elk
+  
+  filebeat:
+    container_name: filebeat
+    build:
+      context: ./beats/filebeat
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes: 
+      - ./beats/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - 'data01:/usr/share/elasticsearch'
+    restart: always
+    networks: 
+      - elk
+  
+  filebeat_2:
+    container_name: filebeat_2
+    build:
+      context: ./beats/filebeat
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes: 
+      - ./beats/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - 'data02:/usr/share/elasticsearch'
+    restart: always
+    networks: 
+      - elk
+
+volumes: {"certs", "data01", "data02"}
+
+networks:
+  elk:
+    driver: bridge

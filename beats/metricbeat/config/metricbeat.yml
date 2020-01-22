@@ -64,7 +64,7 @@ setup.dashboards.enabled: true
 
 #-------------------------- Elasticsearch output -------------------------------
 output.elasticsearch:
-  enabled: true
+  #enabled: true
   #hosts: ["{{elastic_url}}"]
   hosts: ["es01:9200"]
   protocol: "https"
@@ -90,7 +90,7 @@ setup.kibana:
   ssl.verification_mode: none
 
 #============================== Xpack Monitoring =====================================
-logging.level: info
+logging.level: debug
 logging.to_files: true
 logging.files:
   path: /var/log/metricbeat
